@@ -1,71 +1,105 @@
-# Week 11 Portfolio Forecasting
+
+# TIMESERIES-TRADING-OPTIMIZATION
 
 This repository contains the work for the **10 Academy Week 11 Challenge**, focusing on **time series forecasting** and **portfolio optimization** using financial data for:
 
-- **Tesla (TSLA)**
-- **Vanguard Total Bond Market ETF (BND)**
-- **S&P 500 ETF (SPY)**
+- Tesla (TSLA)
+- Vanguard Total Bond Market ETF (BND)
+- S&P 500 ETF (SPY)
 
-The time period covered is **July 1, 2015 – July 31, 2025**.  
-The project is structured to meet the requirements of **Tasks 1–5**, with **Task 1 completed** for the interim submission.
+**Data period:** July 1, 2015 – July 31, 2025  
+The project completes **Tasks 1–5**, culminating in a **backtested portfolio strategy**.
 
-**GitHub:** [TimeSeries-Trading-Optimization](https://github.com/emegua19/TimeSeries-Trading-Optimization)
+**GitHub Repository:** [TimeSeries-Trading-Optimization](https://github.com/emegua19/TimeSeries-Trading-Optimization)
 
 ---
 
-## Project Structure
+## 📂 Project Structure
 
-```
-
-week11\_portfolio\_forecasting/
+```plaintext
+TIMESERIES-TRADING-OPTIMIZATION/
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+├── .pytest_cache/
+├── .venv/
 ├── data/
-│   ├── raw/
-│   │   ├── BND\_raw\.csv
-│   │   ├── SPY\_raw\.csv
-│   │   ├── test.csv
-│   │   └── TSLA\_raw\.csv
-│   └── processed/
-│       ├── processed\_task1.csv
-│       ├── risk\_metrics.csv
+│   ├── processed/
+│   │   ├── processed_task1.csv
+│   │   └── risk_metrics.csv
+│   └── raw/
+│       ├── BND_raw.csv
+│       ├── SPY_raw.csv
+│       ├── test.csv
+│       └── TSLA_raw.csv
 ├── notebooks/
-│   └── 01\_data\_eda.ipynb
-├── reports/
-│   ├── figures/
-│   │   ├── closing\_prices.png
-│   │   ├── daily\_returns.png
-│   │   └── rolling\_volatility.png
+│   ├── 01_data_eda.ipynb
+│   ├── 02_modeling.ipynb
+│   ├── 03_forecast_analysis.ipynb
+│   ├── 04_portfolio_optimization.ipynb
+│   └── 05_backtesting.ipynb
+├── report/
+│   ├── final/
 │   └── interim/
-│       ├── interim\_task1\_report.tex
-│       └── interim\_task1\_report.pdf
+│       ├── interim_task1_report.tex
+│       └── interim_task1_report.pdf
+├── result/
+│   ├── csv/
+│   │   ├── arima_future_12m.csv
+│   │   ├── arima_future_30d.csv
+│   │   ├── arima_test_predictions.csv
+│   │   ├── backtest_summary.csv
+│   │   ├── comparison_test_predictions.csv
+│   │   ├── lstm_future_12m.csv
+│   │   ├── lstm_future_30d.csv
+│   │   ├── lstm_test_predictions.csv
+│   │   ├── metrics_test.csv
+│   │   └── portfolio_optimization_summary.csv
+│   └── figures/
+│       ├── arima_forecast.png
+│       ├── backtest_strategy_vs_benchmark.png
+│       ├── closing_prices.png
+│       ├── comparison_forecast.png
+│       ├── daily_returns.png
+│       ├── efficient_frontier.png
+│       ├── forecast_comparison_12m.png
+│       ├── lstm_forecast.png
+│       └── rolling_volatility.png
 ├── src/
-│   ├── **init**.py
-│   ├── data\_fetch.py
-│   ├── data\_cleaning.py
+│   ├── __pycache__/
+│   ├── __init__.py
+│   ├── data_cleaning.py
+│   ├── data_fetch.py
 │   ├── eda.py
 │   └── utils.py
 ├── tests/
-│   └── test\_data\_pipeline.py
-└── README.md
-
+│   ├── __pycache__/
+│   ├── __init__.py
+│   └── test_data_pipeline.py
+├── .gitignore
+├── LICENSE
+├── README.md
+└── requirements.txt
 ````
 
 ---
 
-## Setup
+## ⚙️ Setup
 
-1. **Clone the repository:**
+**1. Clone the repository**
+
 ```bash
 git clone https://github.com/emegua19/TimeSeries-Trading-Optimization.git
-cd week11_portfolio_forecasting
-````
+cd TIMESERIES-TRADING-OPTIMIZATION
+```
 
-2. **Install dependencies:**
+**2. Install dependencies**
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Required Packages
+**Required packages:**
 
 * yfinance
 * pandas
@@ -76,61 +110,120 @@ pip install -r requirements.txt
 * pmdarima
 * scikit-learn
 * python-docx
+* tensorflow
+* scipy
 
 ---
 
-## Task 1: Preprocess and Explore Data
+##  Project Pipeline
 
-**Notebook:** `notebooks/01_data_eda.ipynb`
+1. **Data Fetching**
 
-**Description:**
+   * Script: `src/data_fetch.py`
+   * Fetch TSLA, BND, SPY data (2015-07-01 → 2025-07-31).
 
-* Fetches, cleans, and analyzes financial data for TSLA, BND, and SPY (2015-07-01 to 2025-07-31)
-* Performs **EDA**, **stationarity testing**, **outlier detection**, and **risk metric calculation**
+2. **Data Cleaning**
 
-**Outputs:**
+   * Script: `src/data_cleaning.py`
+   * Clean & scale data, save to `data/processed/processed_task1.csv`.
 
-* `data/raw/`: Raw CSV files (TSLA\_raw\.csv, BND\_raw\.csv, SPY\_raw\.csv, test.csv)
-* `data/processed/`: Processed dataset (`processed_task1.csv`) and risk metrics (`risk_metrics.csv`)
-* `reports/figures/`: EDA plots (closing\_prices.png, daily\_returns.png, rolling\_volatility.png)
-* `reports/interim/`: Interim report PDF summarizing data preprocessing, EDA, outliers, stationarity, risk metrics, and future work
+3. **EDA**
 
-**Key Results:**
+   * Script: `src/eda.py`
+   * Perform exploratory data analysis, outlier detection, stationarity tests.
 
-* **Dataset shape:** 7,605 rows (2,535 per ticker)
-* **Stationarity:** Prices are **non-stationary**, returns are **stationary** (ADF p-values < 0.05)
-* **Risk Metrics:**
+4. **Forecasting**
 
-  * TSLA → VaR: -5.47%, Sharpe: 0.7108
-  * BND → VaR: -0.49%, Sharpe: -0.3715
-  * SPY → VaR: -1.72%, Sharpe: 0.5748
+   * Notebook: `notebooks/02_modeling.ipynb`
+   * Implement **ARIMA** & **LSTM** models for TSLA price predictions.
 
-**Interim Report:** See `reports/interim/interim_task1_report.pdf` for detailed results and visualizations.
+5. **Portfolio Optimization**
 
----
+   * Notebook: `notebooks/04_portfolio_optimization.ipynb`
+   * Apply Modern Portfolio Theory (MPT) to optimize portfolio weights.
 
-## Future Work
+6. **Backtesting**
 
-* **Task 2:** Fit **ARIMA** models using differenced prices (non-stationary) and stationary returns from `data/processed/processed_task1.csv`
-* **Task 3:** Train **machine learning models** (LSTM, Random Forest) using scaled prices and returns, addressing outliers
-* **Task 4:** Optimize **portfolio weights** for TSLA, BND, SPY using risk metrics (VaR, Sharpe Ratio) from `data/processed/risk_metrics.csv`
-* **Task 5:** Compile a **final report** with forecasting results, portfolio recommendations, and visualizations
+   * Notebook: `notebooks/05_backtesting.ipynb`
+   * Compare optimized portfolio vs. benchmark.
 
 ---
 
-## Notes
+##  Tasks & Key Results
 
-* All code is modularized in `src/`
-* Tests are in `tests/test_data_pipeline.py`
-* Run:
+### **Task 1: Preprocess and Explore Data**
+
+* Notebook: `notebooks/01_data_eda.ipynb`
+* Outputs:
+
+  * Raw data in `data/raw/`
+  * Processed data & risk metrics in `data/processed/`
+  * EDA plots in `result/figures/`
+  * Interim report in `report/interim/`
+* **Key Findings**:
+
+  * Dataset shape: 7,605 rows
+  * Stationarity: Prices non-stationary; returns stationary
+  * Risk metrics: TSLA VaR = -5.47%, Sharpe = 0.7108
+
+---
+
+### **Task 2: Time Series Forecasting**
+
+* Models: ARIMA vs LSTM
+* Train/Test Split:
+
+  * Train: 2015-07-01 → 2023-07-21 (n=2028)
+  * Test: 2023-07-24 → 2025-07-30 (n=507)
+* **Performance (MAPE)**:
+
+  * ARIMA: 21.85%
+  * LSTM: **4.76%** (better at capturing non-linear trends)
+
+---
+
+### **Task 3: Forecast Future Market Trends**
+
+* Forecast period: 2025-08-01 → 2026-07-31
+* LSTM provided more volatility-sensitive forecasts with widening confidence intervals.
+
+---
+
+### **Task 4: Portfolio Optimization**
+
+* Based on LSTM & historical returns
+* **Max Sharpe Portfolio**:
+
+  * TSLA: 0%, BND: 0%, SPY: 100%
+  * Return: 13.65%, Volatility: 18.31%, Sharpe: 0.745
+* **Min Volatility Portfolio**:
+
+  * TSLA: 0%, BND: 94.31%, SPY: 5.69%
+
+---
+
+### **Task 5: Strategy Backtesting**
+
+* Period: 2024-08-01 → 2025-07-31
+* Strategy (Max Sharpe portfolio) **outperformed** benchmark:
+
+  * Total Return: 16.84% vs 10.10%
+  * Sharpe: 0.881 vs 0.846
+
+---
+
+##  Testing
+
+Run tests with:
 
 ```bash
 pytest tests/
 ```
 
-to verify data pipeline functionality
+---
 
-* **Interim submission:** Task 1 completed as of **August 10, 2025**, with all outputs committed to the `task-1` branch
-* For issues or contributions, see the [GitHub repository](https://github.com/emegua19/TimeSeries-Trading-Optimization)
+##  Notes
 
-
+* Code is modularized in `src/`
+* Outputs are saved in `result/csv/` & `result/figures/`
+* Final report to be added in `report/final/`
